@@ -37,20 +37,20 @@
   
 #### Installation Instructions ####
 ```
-	Requirements:
-		Python 3.0
-		Mongodb
-		Libraries: 
-			Scikit-learn
-			Tkinter
-			PIL
-			Scipy
-			MatplotLib
-			Pandas
-			PyMongo
-			H5py
-	Run:
-		python StartHere.py
+Requirements:
+	Python 3.0
+	Mongodb
+	Libraries: 
+		Scikit-learn
+		Tkinter
+		PIL
+		Scipy
+		MatplotLib
+		Pandas
+		PyMongo
+		H5py
+Run:
+	python StartHere.py
 ```
 			
 			
