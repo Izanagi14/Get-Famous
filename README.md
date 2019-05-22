@@ -27,7 +27,8 @@
     the video or any media associated with it, further the tweets are also affected if there in the tweet,
     there is some words which are really popular.
     We take the top ten viral hastags from twitter on the basis of the retweet count returned from the api,
-    and then train the model according to the features and the retweet count as the output, keeping features vs the retweet count.
+    and then train the model according to the features and the retweet count as the output,
+    keeping features vs the retweet count.
     We then directly fed the model in the regression model to train.
     For test train split we have used 3:7 ratio.
     If the tweet contains any of the top ten hashtags or its viral according to the features, 
