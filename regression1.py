@@ -10,12 +10,36 @@ class RegressionModel:
     # Traing set proportion
     TRAINING_SIZE = 0.8
     # Serialization file
-    SERIALIZATION_FILE = "../data/regression_model"
+    SERIALIZATION_FILE = "regression_model"
     # Plot files
     ERROR_PLOT_FILENAME_REGRESSION = "prediction_error_regression.png"
     ERROR_PLOT_FILENAME_CLASSIFICATION = "prediction_error_classification.png"
     COEF_PLOT_FILENAME_REGRESSION = "coefficients_regression.png"
     COEF_PLOT_FILENAME_CLASSIFICATION = "coefficients_classification.png"
+
+    @staticmethod
+    def load_datasets(balance=False, viral_threshold=0):
+
+        # Import data
+        _, features, virality = FeatureExtractor.load(force=True)
+        print "Building datasets..."
+        # Concatenate the arrays into one along the second axis
+        data = np.c_[features, np.array(virality)[:, 0]]
+
+        RegressionModel.__dataset_range(data)
+        # Duplicate viral tweets to balance the dataset
+        if balance:
+            data = RegressionModel.__balance_virality(dataset=data, threshold=viral_threshold)
+        # Shuffle data
+        np.random.shuffle(data)
+        # Split dataset into training and testing sets
+        size = int(len(data) * RegressionModel.TRAINING_SIZE)
+
+        # why  was the test set having overlap with the traning set earlier.
+        training_set = data[:size]
+        testing_set = data[size:]
+
+        return training_set, testing_set
 
     @staticmethod
     def __balance_virality(dataset, threshold):
@@ -105,11 +129,6 @@ class RegressionModel:
         print "> Classifier coefficients: ", list(self.LR.coef_)
         self.plot_coefficients(showPlot, savePlot, 2)
 
-    ''' 
-    This function normalises all the features manually 
-    x =  (x-mean/ sigma)
-
-    '''
 
     def normaliseFeats(self, training_set):
         final_training_set = np.copy(training_set)
@@ -137,6 +156,16 @@ class RegressionModel:
         # print X_test.shape
 
         predictions = self.predictRegression(X_test)
+        '''with open("file.txt", "w") as strs:
+            for i in range(0,10):
+                strs.write(predictions)
+                strs.write("\n")'''
+        # f=open("text.txt",'w')
+        # for i in predictions:
+        #     f.write(str(i))
+        #     f.write("\n")
+        #     print(i)
+        #f.close()
 
         # Mean squared error
         print "> Residual sum of squares: {:.2f}".format(
@@ -296,35 +325,11 @@ class RegressionModel:
             plt.show()
 
 
-def load_datasets(balance=False, viral_threshold=0):
-    """
-    Return the training and testing datasets containing
-    the tweets featured followed by the retweet count
-    """
-    # Import data
-    _, features, virality = FeatureExtractor.load(force=True)
-    print "Building datasets..."
-    # Concatenate the arrays into one along the second axis
-    data = np.c_[features, np.array(virality)[:, 0]]
 
-    RegressionModel.__dataset_range(data)
-    # Duplicate viral tweets to balance the dataset
-    if balance:
-        data = RegressionModel.__balance_virality(dataset=data, threshold=viral_threshold)
-    # Shuffle data
-    np.random.shuffle(data)
-    # Split dataset into training and testing sets
-    size = int(len(data) * RegressionModel.TRAINING_SIZE)
-
-    # why  was the test set having overlap with the traning set earlier.
-    training_set = data[:size]
-    testing_set = data[size:]
-
-    return training_set, testing_set
 
 
 if __name__ == "__main__":
-    training_set, testing_set = load_datasets(balance=True, viral_threshold=55000)
+    training_set, testing_set = RegressionModel.load_datasets(balance=True, viral_threshold=55000)
     
     model = RegressionModel()
 

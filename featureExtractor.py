@@ -3,16 +3,14 @@ import pymongo
 import h5py
 
 class FeatureExtractor:
-    # Data description
     FEATURE_LABEL = ['followers_count', 'friends_count', 'listed_count', 'statuses_count',
         'favourites_count', 'days_from_account_creation', 'verified', 'hashtags', 'media',
         'user_mentions', 'urls', 'text_len']
     VIRALITY_LABEL = ['retweet_count']
 
-    # Output file path
+
     HDF5_FILEPATH = "features.hdf5"
 
-    # MongoDB database and table
     TWITTER_DATABASE = "Twitter"
     TWEETS_TABLE = "dups_removed5"
 
@@ -71,9 +69,6 @@ class FeatureExtractor:
             features.append(0)
 
         retweet_count = tweet['retweet_count']
-        # with open("file.txt","w") as strs:
-        #     strs.write(retweet_count)
-        #     strs.write("\n")
         if retweet_count > 3000000:
             return
 
@@ -105,46 +100,35 @@ class FeatureExtractor:
                     FeatureExtractor.__getFeatures(db[FeatureExtractor.TWEETS_TABLE].find_one({"id": tweet_id}),
                         ids, featuresList, viralityList, keepTweetWithoutHashtags)
 
-        except pymongo.errors.ConnectionFailure, e:
-            print "> Could not connect to MongoDB: %s" % e
+        except (pymongo.errors.ConnectionFailure, e):
+            print ("> Could not connect to MongoDB: %s" % e)
 
         return ids, featuresList, viralityList
 
 
     @staticmethod
     def load(force=False, keepTweetWithoutHashtags=False):
-        """
-        Load data from the specified HDF5 file. Structure is Dataset => Attributes
-        IDs => ID
-        Features => [followers_count, friends_count, listed_count, statuses_count,
-                     hashtags_count, media_count, user_mention_count, url_count,
-                     verified_account, is_a_retweet, tweet_length]
-        Virality => [retweet_count, favorite_count, combined_count]
-        """
-        print "Loading features..."
+        print ("Loading features...")
         try:
             f = h5py.File(FeatureExtractor.HDF5_FILEPATH, 'r')
             ids = f["IDs"]
             features = f["Features"]
             virality = f["Virality"]
-            print "> {} rows loaded".format(len(ids))
+            print ("> {} rows loaded".format(len(ids)))
             return ids, features, virality
         except:
-            print "> Could not load features"
+            print ("> Could not load features")
             if force:
-                print "Loading features from database..."
+                print ("Loading features from database...")
                 ids, features, virality = FeatureExtractor.loadFromDB(keepTweetWithoutHashtags=keepTweetWithoutHashtags)
                 FeatureExtractor.dump(ids, features, virality)
-                print "> {} rows loaded".format(len(ids))
+                print ("> {} rows loaded".format(len(ids)))
                 return ids, features, virality
             return None, None, None
 
     @staticmethod
     def dump(ids, featuresList, viralityList):
-        """
-        Save the given features in a HDF5 file
-        """
-        print "Exporting features..."
+        print ("Exporting features...")
         output = h5py.File(FeatureExtractor.HDF5_FILEPATH, "w")
 
         # ID
@@ -166,8 +150,4 @@ class FeatureExtractor:
 
 
 if __name__ == "__main__":
-    # ids, features, virality = FeatureExtractor.loadFromDB(tweets_id=[592958600357793793L, 592673811239149568L])
-    # ids, features, virality = FeatureExtractor.loadFromDB(limit=0)
-
-    # Load features from DB and dump to disk if required
     ids, features, virality = FeatureExtractor.load(force=True)

@@ -30,8 +30,27 @@
     and then train the model according to the features and the retweet count as the output,
     keeping features vs the retweet count.
     3) We then directly fed the model in the regression model to train.
-    4) For test train split we have used 3:7 ratio.
+    4) For test train split we have used 2:8 ratio.
     5) If the tweet contains any of the top ten hashtags or its viral according to the features, 
     we can predict how viral the tweet is going to be.
 ```
   
+#### Installation Instructions ####
+```
+	Requirements:
+		Python 3.0
+		Mongodb
+		Libraries: 
+			Scikit-learn
+			Tkinter
+			PIL
+			Scipy
+			MatplotLib
+			Pandas
+			PyMongo
+			H5py
+	Run:
+		python StartHere.py
+```
+			
+			

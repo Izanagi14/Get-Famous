@@ -15,7 +15,7 @@ from ttk import Frame, Style
 
 import operator
 
-from featureExtractor1 import FeatureExtractor
+from featureExtractor import FeatureExtractor
 from hashtagIndex import HashtagIndex
 from viralityPrediction import ViralityPrediction
 import numpy as np
